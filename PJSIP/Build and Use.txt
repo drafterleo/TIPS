@@ -1,0 +1,93 @@
+# Build
+	
+	## https://github.com/VoIPGRID/PJSIP/blob/master/README.txt
+
+	apt install libasound2_dev    ## need for ALSA 
+
+	./configure
+
+	# optionaly change variable TARGET_NAME in build.mak file from the root PJ directory
+
+	make dep && make clean && make
+
+	Application's Makefile can get the PJ library suffix by
+    including PJ's build.mak file from the root PJ directory (the
+    suffix is contained in TARGET_NAME variable). For example, to
+    link with PJLIB and PJMEDIA, we can use this syntax in the
+    LDFLAGS: "-lpj-$(TARGET_NAME) -lpjmedia-$(TARGET_NAME)"
+
+
+## Using PJPROJECT with Applications
+
+   Regardless of the build system being used, the following tasks are normally
+   needed to be done in order to build application to use PJSIP and PJMEDIA:
+    1. Put these include directories in the include search path:
+          + pjlib/include
+          + pjlib-util/include
+          + pjmedia/include
+          + pjsip/include
+    2. Put these library directories in the library search path:
+          + pjlib/lib
+          + pjlib-util/lib
+          + pjmedia/lib
+          + pjsip/lib
+    3. Include the relevant PJ header files in the application source file. For
+       example, using these would include ALL APIs exported by PJ:
+
+      #include <pjlib.h>
+      #include <pjlib-util.h>
+      #include <pjsip.h>
+      #include <pjsip_ua.h>
+      #include <pjsip_simple.h>
+      #include <pjsua.h>
+      #include <pjmedia.h>
+      #include <pjmedia-codec.h>
+       (Note: the documentation of the relevant libraries should say which
+       header files should be included to get the declaration of the APIs).
+    4. Declare the OS macros.
+          + For Windows applications built with Visual Studio, we need to
+            declare PJ_WIN32=1 macro in the project settings (declaring the
+            macro in the source file may not be sufficient).
+          + For Windows Mobile applications build with Visual C++, we need to
+            declare PJ_WIN32_WINCE=1 macro in the project settings.
+          + For  GNU build system/autoconf based build system, we need to
+            declare PJ_AUTOCONF=1 macro when compiling the applications.
+       (Note: the old PJ build system requires declaring the target processor
+       with PJ_M_XXX=1 macro, but this has been made obsolete. The target
+       processor  will  be  detected  from compiler's predefined macro by
+       pjlib/config.h file).
+    5. Link with the appropriate PJ libraries. The following libraries will
+       need to be included in the library link specifications:
+
+        pjlib
+                Base library used by all libraries.
+
+        pjlib-util
+                Auxiliary library containing scanner, XML, STUN, MD5, getopt,
+                etc, used by the SIP and media stack.
+
+        pjsip
+                SIP core stack library.
+
+        pjsip-ua
+                SIP user agent library containing INVITE session, call
+                transfer, client registration, etc.
+
+        pjsip-simple
+                SIP SIMPLE library for base event framework, presence, instant
+                messaging, etc.
+
+        pjsua
+                High level SIP UA library, combining SIP and media stack into
+                high-level easy to use API.
+
+        pjmedia
+                The media framework.
+
+        pjmedia-codec
+                Container library for various codecs such as GSM, Speex, and
+                iLBC.
+
+
+
+
