@@ -1,0 +1,89 @@
+# Установка Asterisk в Ubuntu Server
+	## https://ixnfo.com/installing-asterisk-on-ubuntu-server.html
+	sudo apt update
+	sudo apt upgrade
+
+	sudo apt install ntpdate
+	sudo apt install asterisk
+
+	sudo apt install dahdi asterisk-dahdi asterisk-mp3 asterisk-mysql asterisk-core-sounds-ru asterisk-core-sounds-ru-g722 asterisk-core-sounds-ru-gsm asterisk-dev asterisk-core-sounds-ru-wav lame
+
+	## Посмотреть запущен ли Asterisk и его версию можно командами:
+
+		ps aux | grep asterisk
+		sudo netstat -tap | grep asterisk
+		sudo netstat -na | grep 5060
+		sudo netstat -na | grep :5060 | wc -l
+		asterisk -V
+
+	sudo asterisk -vvr
+
+	## при наличии ошибок в загрузке астерикса в /etc/asterisk/modules.conf отменить 
+	модули, вызивающие ошибку.
+		nano /etc/asterisk/modules.conf
+
+		noload => res_config_ldap.so
+		noload => res_ari.so
+
+
+
+# Настройка
+	## https://www.dmosk.ru/miniinstruktions.php?mini=asterisk-ubuntu
+
+	nano /etc/asterisk/extensions.conf
+		[outcaling]
+		exten => _XXXX,1,Dial(SIP/${EXTEN},,m)
+
+		* создаем контекст с именем outcaling для четырехзначных номеров (XXXX) с вызовом по SIP по внутреннему номеру.
+
+	nano /etc/asterisk/sip.conf
+		[1001]
+		type=friend
+		regexten=1001
+		secret=1234
+		context=outcaling
+		host=dynamic
+		callerid="1001" <1001>
+		disallow=all
+		allow=alaw
+		allow=ulaw
+		language=ru
+		callgroup=1
+		pickupgroup=1
+		qualify=yes
+		canreinvite=yes
+		call-limit=4
+		nat=no
+		 
+		[1002]
+		type=friend
+		regexten=1002
+		secret=1234
+		context=outcaling
+		host=dynamic
+		callerid="1002" <1002>
+		disallow=all
+		allow=alaw
+		allow=ulaw
+		language=ru
+		callgroup=1
+		pickupgroup=1
+		qualify=yes
+		canreinvite=yes
+		call-limit=4
+		nat=no
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,8 @@
+Network settings
+	# http://www.krizna.com/centos/setup-network-centos-7/
+
+	nmcli d    	# (quick identification of Ethernet cards)
+	nmtui		# (Network manager)
+
+	/etc/sysconfig/network-scripts/ifcfg-enpXXX  	# command mode	
+
