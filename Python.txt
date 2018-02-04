@@ -1,0 +1,47 @@
+﻿
+## Installation (Ubuntu)
+
+apt update
+apt upgrade
+apt install python3.6
+apt install python3-pip
+python3.6 -m pip install --upgrade pip
+python3.6 -m pip install <package>
+
+запуск в фоне
+
+screen
+python3.6 web_service.py
+
+Press ctrl+A and then d.
+
+
+----------------------------------------------------------
+sudo apt-get install build-essential checkinstall
+sudo apt-get install zlib1g-dev
+
+download python to /usr/src
+sudo tar xf Python-3.6.1.tar.xz
+
+cd Python-3.6.1/
+sudo ./configure
+sudo make altinstall
+
+
+-------------------------------------------------------------
+conda kernels for jupyter
+
+conda create -n py35 python=3.5
+activate py35
+python -m ipykernel install --name python35
+deactivate
+
+conda info --envs
+
+pip install --upgrade tensorflow-gpu
+
+
+
+
+
+

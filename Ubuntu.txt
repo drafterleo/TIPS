@@ -1,0 +1,32 @@
+## Network settings 
+	# https://bowerstudios.com/node/1015
+	# https://askubuntu.com/questions/778392/install-second-network-interface-on-virtualized-ubuntu-server
+
+	ls /sys/class/net/ 	# список доступных устройств
+	ifconfig
+	sudo nano /etc/network/interfaces
+		auto ents38
+		iface ents38 inet dhcp
+		
+		auto ents38
+		iface ents38 inet static
+		address 192.168.1.2
+		netmask 255.255.255.0
+		network 192.168.1.0
+		broadcast 192.168.1.255
+
+	sudo /etc/init.d/networking start|stop|restart 
+
+	### VMware - Edit > Virtual Network Settings
+
+
+## SSH
+	# http://help.ubuntu.ru/wiki/ssh
+
+	sudo apt install ssh
+	sudo service ssh stop|start|restart 
+	/etc/ssh/sshd_config
+
+
+
+

@@ -1,0 +1,68 @@
+Git global setup
+	git config --global user.name "Drafterleo"
+	git config --global user.email "drafterleo@gmail.com"
+
+Aliases
+	git config --global alias.co checkout
+	git config --global alias.ci commit
+	git config --global alias.st status
+	git config --global alias.br branch
+	git config --global alias.hist "log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short"
+	git config --global alias.type 'cat-file -t'
+	git config --global alias.dump 'cat-file -p'
+
+Existing folder
+	cd existing_folder
+	git init
+	git remote add origin https://gitlab.com/Drafterleo/PROFOMS.git
+	git add .
+	git commit
+	git push -u origin master
+
+
+Existing Git repository
+	cd existing_repo
+	git remote add origin https://gitlab.com/Drafterleo/PROFOMS.git
+	git push -u origin --all
+	git push -u origin --tags
+
+git add ...
+git status
+git commit [-a] -m "Commit message" 
+
+git branch <branch_name>
+git checkout <branch_name>
+
+git checkout master
+git merge [-s resolve] <branch_name>
+
+git push origin <branch>
+git push origin <branch> --force
+
+git pull origin <branch>
+
+git merge [-s resolve] origin/master
+
+
+git remote update  
+git pull --all
+
+### http://stackoverflow.com/questions/4114095/how-to-revert-git-repository-to-a-previous-commit
+
+Temporarily switch to a different commit:
+	git checkout 0d1d7fc32
+
+Hard delete unpublished commits:
+	# This will destroy any local modifications.
+	# Don't do it if you have uncommitted work you want to keep.
+	git reset --hard 0d1d7fc32
+
+	# This saves the modifications, then reapplies that patch after resetting.
+	# You could get merge conflicts, if you've modified things which were
+	# changed since the commit you reset to.
+	git stash
+	git reset --hard 0d1d7fc32
+	git stash pop
+
+
+	

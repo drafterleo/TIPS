@@ -1,0 +1,22 @@
+npm install
+npm run dev
+npm run build
+
+
+webpack.config.js:
+
+devServer: {
+    inline:true,
+    port: 8008
+  },
+
+
+------------- vue CLI -------------------
+
+https://youtu.be/kZvTUNGrHrw
+
+npm install vue-cli -g    # -g значит global - можно вызывать отовсюду
+
+vue init webpack-simple project-dir
+
+npm install # установить зависимости
