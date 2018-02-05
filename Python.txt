@@ -1,4 +1,4 @@
-п»ї
+
 ## Installation (Ubuntu)
 
 apt update
@@ -8,7 +8,7 @@ apt install python3-pip
 python3.6 -m pip install --upgrade pip
 python3.6 -m pip install <package>
 
-Р·Р°РїСѓСЃРє РІ С„РѕРЅРµ
+запуск в фоне
 
 screen
 python3.6 web_service.py
@@ -40,8 +40,16 @@ conda info --envs
 
 pip install --upgrade tensorflow-gpu
 
+--------------------------------------------------------------
+
+https://stackoverflow.com/questions/42978349/anaconda-version-with-python-3-5
 
 
+conda create -n tensorflow python=3.5 tensorflow ipython
+activate tensorflowproject
+
+conda config --add channels conda-forge
+conda install tensorflow
 
 
 
