@@ -2,7 +2,7 @@
 	
 	## https://github.com/VoIPGRID/PJSIP/blob/master/README.txt
 
-	apt install libasound2_dev    ## need for ALSA 
+	apt install libasound2-dev    ## need for ALSA 
 
 	./configure
 
