@@ -3,7 +3,7 @@
 	## https://github.com/VoIPGRID/PJSIP/blob/master/README.txt
 
 	apt install g++ libc6-dev linux-libc-dev       # if ./configure not working
-  apt install libasound2-dev                     # need for ALSA 
+	apt install libasound2-dev                     # need for ALSA 
 
 	./configure
 
