@@ -70,6 +70,22 @@
 				
 			Remove the @\h, and replace the \w with an uppercase \W, so that it becomes:
 
+	## environment variables
+
+		# Set temporary
+			setenv VARNAME "value"
+			VARNAME="value"; export VARNAME
+
+		Edit the ~/.bashrc to set the environmental variables permanently.
+
+		printenv 				# list all environment variables
+		echo $Env_Var_Name		# print a specific environment variable
+
+
+
+
+
+
 
 
 
