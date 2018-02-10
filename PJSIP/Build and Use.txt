@@ -92,47 +92,56 @@
 
 ## build libs
     
-    # Makefile
+    # qmake 
 
-    export TARGET_NAME := linux-gnu
+      # The order is important
 
-    export PJLIB_LDLIB := -lpj-$(TARGET_NAME)
-    export PJLIB_UTIL_LDLIB := -lpjlib-util-$(TARGET_NAME)
-    export PJNATH_LDLIB := -lpjnath-$(TARGET_NAME)
-    export PJMEDIA_AUDIODEV_LDLIB := -lpjmedia-audiodev-$(TARGET_NAME)
-    export PJMEDIA_VIDEODEV_LDLIB := -lpjmedia-videodev-$(TARGET_NAME)
-    export PJMEDIA_LDLIB := -lpjmedia-$(TARGET_NAME)
-    export PJMEDIA_CODEC_LDLIB := -lpjmedia-codec-$(TARGET_NAME)
-    export PJSIP_LDLIB := -lpjsip-$(TARGET_NAME)
-    export PJSIP_SIMPLE_LDLIB := -lpjsip-simple-$(TARGET_NAME)
-    export PJSIP_UA_LDLIB := -lpjsip-ua-$(TARGET_NAME)
-    export PJSUA_LIB_LDLIB := -lpjsua-$(TARGET_NAME)
-    export PJSUA2_LIB_LDLIB := -lpjsua2-$(TARGET_NAME)
+      TARGET_NAME = linux-gnu
 
-    -lm -lrt -lpthread  -lasound
-    -lstdc++
+      # PJSIP libs
 
-    # qmake
+      PJLIB_LDLIB = -lpj-$${TARGET_NAME}
+      PJLIB_UTIL_LDLIB = -lpjlib-util-$${TARGET_NAME}
+      PJNATH_LDLIB = -lpjnath-$${TARGET_NAME}
+      PJMEDIA_AUDIODEV_LDLIB = -lpjmedia-audiodev-$${TARGET_NAME}
+      PJMEDIA_VIDEODEV_LDLIB = -lpjmedia-videodev-$${TARGET_NAME}
+      PJMEDIA_LDLIB = -lpjmedia-$${TARGET_NAME}
+      PJMEDIA_CODEC_LDLIB = -lpjmedia-codec-$${TARGET_NAME}
+      PJSIP_LDLIB = -lpjsip-$${TARGET_NAME}
+      PJSIP_SIMPLE_LDLIB = -lpjsip-simple-$${TARGET_NAME}
+      PJSIP_UA_LDLIB = -lpjsip-ua-$${TARGET_NAME}
+      PJSUA_LIB_LDLIB = -lpjsua-$${TARGET_NAME}
+      PJSUA2_LIB_LDLIB = -lpjsua2-$${TARGET_NAME}
 
-    TARGET-NAME = linux-gnu
+      LIBS += $${PJSUA_LIB_LDLIB} \
+              $${PJSIP_UA_LDLIB} \
+              $${PJSIP_SIMPLE_LDLIB} \
+              $${PJSIP_LDLIB} \
+              $${PJMEDIA_CODEC_LDLIB} \
+              $${PJMEDIA_LDLIB} \
+              $${PJMEDIA_VIDEODEV_LDLIB} \
+              $${PJMEDIA_AUDIODEV_LDLIB} \
+              $${PJMEDIA_LDLIB} \
+              $${PJNATH_LDLIB} \
+              $${PJLIB_UTIL_LDLIB} \
+              $${PJLIB_LDLIB}
 
-    PJLIB_LDLIB := -lpj-$${TARGET_NAME}
-    PJLIB_UTIL_LDLIB := -lpjlib-util-$${TARGET_NAME}
-    PJNATH_LDLIB := -lpjnath-$${TARGET_NAME}
-    PJMEDIA_AUDIODEV_LDLIB := -lpjmedia-audiodev-$${TARGET_NAME}
-    PJMEDIA_VIDEODEV_LDLIB := -lpjmedia-videodev-$${TARGET_NAME}
-    PJMEDIA_LDLIB := -lpjmedia-$${TARGET_NAME}
-    PJMEDIA_CODEC_LDLIB := -lpjmedia-codec-$${TARGET_NAME}
-    PJSIP_LDLIB := -lpjsip-$${TARGET_NAME}
-    PJSIP_SIMPLE_LDLIB := -lpjsip-simple-$${TARGET_NAME}
-    PJSIP_UA_LDLIB := -lpjsip-ua-$${TARGET_NAME}
-    PJSUA_LIB_LDLIB := -lpjsua-$${TARGET_NAME}
-    PJSUA2_LIB_LDLIB := -lpjsua2-$${TARGET_NAME}
+      # third party
 
-    LIBS += PJLIB_LDLIB PJLIB_UTIL_LDLIB
+      LIBS += -lsrtp-$${TARGET_NAME} \
+              -lresample-$${TARGET_NAME} \
+              -lgsmcodec-$${TARGET_NAME} \
+              -lspeex-$${TARGET_NAME} \
+              -lilbccodec-$${TARGET_NAME} \
+              -lg7221codec-$${TARGET_NAME} \
+      #        -lportaudio-$${TARGET_NAME} \
+              -lyuv-$${TARGET_NAME} \
+              -lwebrtc-$${TARGET_NAME}
 
-    # LIBS += -L/usr/local/lib -lmath
-    # INCLUDEPATH = c:/msdev/include d:/stl/include
+      LIBS += -lm \
+              -lrt \
+              -lpthread \
+              -lasound
 
 
 
