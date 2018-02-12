@@ -65,4 +65,8 @@ Hard delete unpublished commits:
 	git stash pop
 
 
+Autosave passwords
+	git config credential.helper store
+
+
 	
