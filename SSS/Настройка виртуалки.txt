@@ -1,0 +1,34 @@
+генерация ключа ssh
+
+ssh-keygen -t rsa -b 4096 -C "drafterleo@gmail.com"
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
+
+~/.ssh/id_rsa.pub добавить в GitHub
+
+добавить публичный ключ на 172.16.35.112 в папку ~/.ssh/authorized_keys
+
+
+
+
+установить openvpn и virt-manager
+
+apt install openvpn
+apt install virt-manager
+
+пакеты для интерфейса virt-manager
+sudo apt install gir1.2-spice-client-gtk-3.0 gir1.2-spice-client-gtk-2.0
+
+скопировать ключи в /etc/openvpn
+
+service openvpn start
+
+
+
+подключение к серверу виртуальных машин
+
+virt-manager -c 'qemu+ssh://drafterleo@172.16.35.112/system?socket=/var/run/libvirt/libvirt-sock'
+
+drafterleo: 55 (учётные на 172.16.35.112)
+добавить публичный ключ на 172.16.35.112 в папку ~/.ssh/authorized_keys
+
