@@ -69,4 +69,18 @@ Autosave passwords
 	git config credential.helper store
 
 
+SSH key generation
+	ssh-keygen -t rsa -b 4096 -C "drafterleo@gmail.com"
+	eval $(ssh-agent -s)
+	ssh-add ~/.ssh/id_rsa
+
+	~/.ssh/id_rsa.pub добавить в GitHub
+
+	на Windows
+
+	ssh-keygen
+	/.ssh/id_rsa скопировать в C:\Program Files\Git\.ssh
+
+
+
 	
