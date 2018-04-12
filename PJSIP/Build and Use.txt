@@ -9,6 +9,7 @@
 	./configure
 
 	# optionaly change variable TARGET_NAME in build.mak file from the root PJ directory
+		(gnu-linux in DisPult project)
 
 	make dep && make clean && make
 
