@@ -4,7 +4,7 @@
 
 	apt install g++ libc6-dev linux-libc-dev       # if ./configure not working
 	apt install libasound2-dev                     # need for ALSA
-	sudo apt install libgl1-mesa-dev 			   # need for Qt >= 5.9	(-lGL)
+	apt install libgl1-mesa-dev		 			   # need for Qt >= 5.9	(-lGL)
 
 	./configure
 
