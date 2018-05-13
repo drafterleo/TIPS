@@ -17,4 +17,10 @@ Install
 	
 	
 	sudo apt install libldap2-dev
+
+search from client side
+
+	sudo apt install ldap-utils
+
+	ldapsearch -x -LLL -h 192.168.88.10 -D cn=admin,dc=ms,dc=org -w hewohe -b dc=ms,dc=org dn
 	
