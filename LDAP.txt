@@ -32,6 +32,8 @@ search from client side
 	ldapadd -a -h 192.168.88.10 -D cn=admin,dc=ms -w secret -f ./zzData/contacts.ldif
 
 	-H "ldap://192.168.88.10/dc=ms??sub?(uid=*)" -D cn=admin,dc=ms -w secret
+	-H "ldap://95.174.99.241/dc=ms??sub?(uid=*)" -D cn=admin,dc=ms -w secret
+	-H "ldap://172.16.36.180/dc=ms??sub?(uid=*)" -D cn=admin,dc=ms -w secret
 
 
 Using libldap, the LDAP Client Library
