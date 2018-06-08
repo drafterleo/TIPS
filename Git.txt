@@ -1,4 +1,4 @@
-Git global setup
+﻿Git global setup
 	git config --global user.name "Drafterleo"
 	git config --global user.email "drafterleo@gmail.com"
 
@@ -83,6 +83,10 @@ SSH key generation
 	ssh-keygen
 	/.ssh/id_rsa скопировать в C:\Program Files\Git\.ssh
 
+
+Push pull default
+	git config --global push.default current
+	git config --global push.default current
 
 
 	
