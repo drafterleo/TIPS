@@ -9,11 +9,11 @@
 	./configure
 
 	# optionaly change variable TARGET_NAME in build.mak file from the root PJ directory
-		(gnu-linux in DisPult project)
+		(linux-gnu in DisPult project)
 
 	make dep && make clean && make
 
-	Application's Makefile can get the PJ library suffix by
+	Application's Makefile can get the PJ library suffix byc,j
     including PJ's build.mak file from the root PJ directory (the
     suffix is contained in TARGET_NAME variable). For example, to
     link with PJLIB and PJMEDIA, we can use this syntax in the
