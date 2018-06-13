@@ -1,0 +1,5 @@
+sudo xed /etc/ld.so.conf.d/randomLibs.conf
+
+добавить пути, например: /usr/local/lib
+
+sudo ldconfig
