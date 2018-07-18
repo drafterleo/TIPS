@@ -1,5 +1,5 @@
 ﻿Git global setup
-	git config --global user.name "Drafterleo"
+	git config --global user.name "drafterleo"
 	git config --global user.email "drafterleo@gmail.com"
 
 Aliases
@@ -86,7 +86,7 @@ SSH key generation
 
 Push pull default
 	git config --global push.default current
-	git config --global push.default current
+	git config --global pull.default current
 	git branch --set-upstream-to=origin/<branch> <branch>
 
 Git branch in bash prompt ~/.bashrc
