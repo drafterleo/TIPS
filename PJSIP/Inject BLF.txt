@@ -1140,11 +1140,141 @@ static void unsubscribe_buddy_blf(pjsua_buddy_id buddy_id)
     pj_log_pop_indent();
 }
 
+############# .../pjsip-apps/src/pjsua/pjsua_app.c
+
+------------------------------------------------
+
++++ после on_buddy_state
+
+/*
+ * Handler on buddy blf state changed.
+ */
+static void on_buddy_blf_state(pjsua_buddy_id buddy_id)
+{
+    pjsua_buddy_blf_info info;
+    pjsua_buddy_get_blf_info(buddy_id, &info);
+
+    PJ_LOG(3,(THIS_FILE, "%.*s dialog-info-state: %.*s, dialog-info-version: %.*s, "
+            "dialog-info-entity: %.*s, dialog-id: %.*s, dialog-call-id: %.*s, "
+            "dialog-remote-tag: %.*s, dialog-local-tag: %.*s, dialog-direction: %.*s, "
+            "dialog-state: %.*s, dialog-state-code: %.*s, dialog-duration: %.*s, "
+            "local-identity: %.*s, local-target-uri: %.*s, remote-identity: %.*s, "
+            "remote-target-uri: %.*s, subscription blf state: %s, (last termination "
+            "reason code=%d %.*s)",
+          (int)info.uri.slen,
+          info.uri.ptr,
+          (int)info.dialog_info_state.slen,
+          info.dialog_info_state.ptr,
+          (int)info.dialog_info_version.slen,
+          info.dialog_info_version.ptr,
+          (int)info.dialog_info_entity.slen,
+          info.dialog_info_entity.ptr,
+          (int)info.dialog_id.slen,
+          info.dialog_id.ptr,
+          (int)info.dialog_call_id.slen,
+          info.dialog_call_id.ptr,
+          (int)info.dialog_remote_tag.slen,
+          info.dialog_remote_tag.ptr,
+          (int)info.dialog_local_tag.slen,
+          info.dialog_local_tag.ptr,
+          (int)info.dialog_direction.slen,
+          info.dialog_direction.ptr,
+          (int)info.dialog_state.slen,
+          info.dialog_state.ptr,
+          (int)info.dialog_state_code.slen,
+          info.dialog_state_code.ptr,
+          (int)info.dialog_duration.slen,
+          info.dialog_duration.ptr,
+          (int)info.local_identity.slen,
+          info.local_identity.ptr,
+          (int)info.local_target_uri.slen,
+          info.local_target_uri.ptr,
+          (int)info.remote_identity.slen,
+          info.remote_identity.ptr,
+          (int)info.remote_target_uri.slen,
+          info.remote_target_uri.ptr,
+          info.sub_state_name,
+          info.sub_term_code,
+          (int)info.sub_term_reason.slen,
+          info.sub_term_reason.ptr));
+}
+
++++ после on_buddy_evsub_state
+
+static void on_buddy_evsub_blf_state(pjsua_buddy_id buddy_id,
+                 pjsip_evsub *sub,
+                 pjsip_event *event)
+{
+    char event_info[80];
+
+    PJ_UNUSED_ARG(sub);
+
+    event_info[0] = '\0';
+
+    if (event->type == PJSIP_EVENT_TSX_STATE &&
+        event->body.tsx_state.type == PJSIP_EVENT_RX_MSG)
+    {
+        pjsip_rx_data *rdata = event->body.tsx_state.src.rdata;
+        snprintf(event_info, sizeof(event_info),
+             " (RX %s)",
+             pjsip_rx_data_get_info(rdata));
+    }
+
+    PJ_LOG(4,(THIS_FILE,
+          "Buddy %d: blf subscription state: %s (event: %s%s)",
+          buddy_id, pjsip_evsub_get_state_name(sub),
+          pjsip_event_str(event->type),
+          event_info));
+}
 
 
++++ в /pjsua_app_legacy.c keystroke_help
 
+    puts("|                              | +d  Subscribe blf        |                   |");
+    puts("|                              | -d  Subscribe blf        |                   |");
 
++++ в /pjsua_app_legacy.c legacy_main()
 
+else if (menuin[1] == 'd') {
+            pjsua_buddy_config buddy_cfg;
+            pjsua_buddy_id buddy_id;
+            pj_status_t status;
+
+            if (!simple_input("Enter buddy's URI:", buf, sizeof(buf)))
+                break;
+
+            if (pjsua_verify_url(buf) != PJ_SUCCESS) {
+                printf("Invalid URI '%s'\n", buf);
+                break;
+            }
+
+            pj_bzero(&buddy_cfg, sizeof(pjsua_buddy_config));
+
+            buddy_cfg.uri = pj_str(buf);
+            buddy_cfg.subscribe = PJ_TRUE;
+
+            status = pjsua_buddy_add_blf(&buddy_cfg, &buddy_id);
+            if (status == PJ_SUCCESS) {
+                printf("New buddy '%s' added at index %d\n",
+                   buf, buddy_id+1);
+            }
+        } 
+
++++
+
+else if (menuin[1] == 'd') {
+		if (!simple_input("Enter blf buddy ID to delete",buf,sizeof(buf)))
+		    break;
+
+		i = my_atoi(buf) - 1;
+
+		if (!pjsua_buddy_is_valid(i)) {
+		    printf("Invalid buddy id %d\n", i);
+		} else {
+		    pjsua_buddy_del_blf(i);
+		    printf("BLF buddy %d deleted\n", i);
+        }
+     } 
 
 
 
