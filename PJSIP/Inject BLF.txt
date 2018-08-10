@@ -422,6 +422,13 @@ PJ_DECL(pj_status_t) pjsua_buddy_update_blf(pjsua_buddy_id buddy_id);
     pjsip_blf_status    blf_status; /**< Buddy blf status.     */
 
 
+>>> pjsip/pjsua-lib/src/pjsua_core.c
+
++++ в pjsua_init()     
+
+    status = pjsip_blf_init_module( pjsua_var.endpt, pjsip_evsub_instance());
+    PJ_ASSERT_RETURN(status == PJ_SUCCESS, status);
+
 >>> pjsip/pjsua-lib/src/pjsua_pres.c
 
 +++
@@ -1228,7 +1235,14 @@ static void on_buddy_evsub_blf_state(pjsua_buddy_id buddy_id,
 }
 
 
-+++ в /pjsua_app_legacy.c keystroke_help
++++  в app_init()
+
+    app_config.cfg.cb.on_buddy_blf_state = &on_buddy_blf_state;
+    app_config.cfg.cb.on_buddy_evsub_blf_state = &on_buddy_evsub_blf_state;
+
+
+
+>>> в /pjsua_app_legacy.c keystroke_help
 
     puts("|                              | +d  Subscribe blf        |                   |");
     puts("|                              | -d  Subscribe blf        |                   |");
