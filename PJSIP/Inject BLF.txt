@@ -1292,3 +1292,11 @@ else if (menuin[1] == 'd') {
 
 
 
+###################### pjsua2
+
++++ .../pjsip/src/pjsua2/endpoint.cpp Endpoint::libInit() 
+
+
+    ua_cfg.cb.on_buddy_blf_state = &Endpoint::on_buddy_state;
+    ua_cfg.cb.on_buddy_evsub_blf_state = &Endpoint::on_buddy_evsub_state;
+
