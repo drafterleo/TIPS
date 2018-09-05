@@ -89,6 +89,11 @@ Push pull default
 	git config --global pull.default current
 	git branch --set-upstream-to=origin/<branch> <branch>
 
+Tags
+	git tag -a <tagname> -m '<message>'
+	git push --follow-tags
+	git config --global push.followTags true
+
 Git branch in bash prompt ~/.bashrc
 
 parse_git_branch() {
