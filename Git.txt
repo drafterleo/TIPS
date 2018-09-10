@@ -1,4 +1,8 @@
-﻿Git global setup
+﻿sudo apt-add-repository ppa:git-core/ppa
+sudo apt update
+sudo apt install git
+
+Git global setup
 	git config --global user.name "drafterleo"
 	git config --global user.email "drafterleo@gmail.com"
 
