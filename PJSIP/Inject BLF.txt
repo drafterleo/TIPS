@@ -1,4 +1,4 @@
-########### /pjsip/pjsip-simple/
+﻿########### /pjsip/pjsip-simple/
 
 >>> добавить blf.h и blf.c в (include) (src)
 >>> добавить dialog_info.h и dialog_info.c в (include) (src)
@@ -373,6 +373,11 @@ PJ_DECL(pj_status_t) pjsua_buddy_get_blf_info(pjsua_buddy_id buddy_id,
 PJ_DECL(pj_status_t) pjsua_buddy_add_blf(const pjsua_buddy_config *buddy_cfg,
                      pjsua_buddy_id *p_buddy_id);
 
+
+/*
+ * Delete blf buddy.
+ */
+PJ_DEF(pj_status_t) pjsua_buddy_del_blf(pjsua_buddy_id buddy_id);
 
 
 /**
@@ -786,6 +791,46 @@ PJ_DEF(pj_status_t) pjsua_buddy_subscribe_blf( pjsua_buddy_id buddy_id,
     lck.buddy->monitor = subscribe;
 
     pjsua_buddy_update_blf(buddy_id);
+
+    unlock_buddy(&lck);
+    pj_log_pop_indent();
+    return PJ_SUCCESS;
+}
+
+/*
+ * Update buddy's blf.
+ */
+PJ_DEF(pj_status_t) pjsua_buddy_update_blf(pjsua_buddy_id buddy_id)
+{
+    struct buddy_lock lck;
+    pj_status_t status;
+
+    PJ_ASSERT_RETURN(pjsua_buddy_is_valid(buddy_id), PJ_EINVAL);
+
+    status = lock_buddy("pjsua_buddy_update_blf()", buddy_id, &lck, 0);
+    if (status != PJ_SUCCESS)
+        return status;
+
+    PJ_LOG(4,(THIS_FILE, "Buddy %d: updating blf..", buddy_id));
+    pj_log_push_indent();
+
+    /* Is this an unsubscribe request? */
+    if (!lck.buddy->monitor) {
+        unsubscribe_buddy_blf(buddy_id);
+        unlock_buddy(&lck);
+        pj_log_pop_indent();
+        return PJ_SUCCESS;
+    }
+
+    /* Ignore if presence is already active for the buddy */
+    if (lck.buddy->sub) {
+        unlock_buddy(&lck);
+        pj_log_pop_indent();
+        return PJ_SUCCESS;
+    }
+
+    /* Initiate blf subscription */
+    subscribe_buddy_blf(buddy_id);
 
     unlock_buddy(&lck);
     pj_log_pop_indent();
@@ -1299,4 +1344,10 @@ else if (menuin[1] == 'd') {
 
     ua_cfg.cb.on_buddy_blf_state = &Endpoint::on_buddy_state;
     ua_cfg.cb.on_buddy_evsub_blf_state = &Endpoint::on_buddy_evsub_state;
+
+---- скопироавть
+	/pjsip/src/pjsua2/presence.cpp
+	/pjsip/inclule/pjsua2/presence.hpp
+
+
 
