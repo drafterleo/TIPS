@@ -1,4 +1,4 @@
-# Установка Asterisk в Ubuntu Server
+﻿# Установка Asterisk в Ubuntu Server
 	## https://ixnfo.com/installing-asterisk-on-ubuntu-server.html
 	sudo apt update
 	sudo apt upgrade
@@ -73,6 +73,18 @@
 		call-limit=4
 		nat=no
 
+
+# Отладка
+	sudo asterisk -rx "sip set debug peer user001"
+	sudo asterisk -rx "sip set debug ip 192.168.1.1"
+	sudo asterisk -rx "sip set debug on" 
+
+	sudo asterisk -r
+
+	sudo asterisk -rx "sip set debug off"
+ 
+
+		
 
 
 
