@@ -2,3 +2,28 @@
 	18344 - командный
 	18345 - потоковый
 
+MediaServer.Net.Ms3s.CommandClient
+MediaServer.Net.Ms3s.Login;
+
+unit MediaServer.Net.Ms3s.Definitions;
+	const
+	   Ms3sProtocolVerion = 131010; //'2013.10.10'
+
+	type
+	  //Команды удаленного взаимодействия
+	  TInterchangeCommand = (
+	    //Выполнить авторизацию
+	    icLogin,
+	    icGetSourceCount,
+	    icGetSourceInfoByIndex,
+	    icGetSourceInfoByName,
+	    icGetAllSourceInfo,
+	    icGetSourceBackingInfo,
+	    icCreateStream,
+	    icDestroyStream,
+	    icPtzCommand,
+	    icPtzGetPoints,
+	    icSyncStream,
+	    icCreateStreamWithLogin,
+	    icNop
+	  );
