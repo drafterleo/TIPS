@@ -2,12 +2,46 @@
 	18344 - командный
 	18345 - потоковый
 
-MediaServer.Net.Ms3s.CommandClient
-MediaServer.Net.Ms3s.Login;
+	ms3s://172.16.33.133:18344/Out_102   root 1
+
+@@@ unit MediaServer.Net.Ms3s.Stream;
+	TMediaServerStream = class
+		procedure TMediaServerStream.OpenWithLogin(
 
 unit MediaServer.Net.Ms3s.Definitions;
 	const
 	   Ms3sProtocolVerion = 131010; //'2013.10.10'
+
+	TMediaType = (mtVideo,mtAudio,mtSysData); // 111 
+
+  stHHVI  = TStreamType($49564848); //HHVI;
+  stYUV420 = TStreamType($34565559); //YUV, 4+2+0;
+  stRGB = TStreamType($20424752); //RGB
+  stMJPEG = TStreamType($47504A4D); //MJPG
+  stH264 = TStreamType($34363248); //H264
+  stMpeg4 = TStreamType($34504D46); //FMP4
+
+  //AUDIO
+  stHHAU  = TStreamType($55414848); //HHAU;
+  stPCM  =TStreamType(WAVE_FORMAT_PCM); //PCM
+  stPCM_ALAW  =TStreamType(WAVE_FORMAT_ALAW); //PCMA  (G.711 a-law)
+  stPCM_MULAW  =TStreamType(WAVE_FORMAT_MULAW); //PCMU  (G.711 u-law)
+  stADPCM     = TStreamType(WAVE_FORMAT_ADPCM); //
+  stG726_ADPCM  = TStreamType(WAVE_FORMAT_G726_ADPCM);
+
+  stUNIV = TStreamType($554E4956); //UNIV. Universal container. Type of stream is unknown until first frame came
+
+
+  stCOPY = TStreamType($59504F43); //COPY
+  stBinary = TStreamType($53545354); //TSTS
+
+  //SYS
+  stPtzPosition = TStreamType($505A5450); //PTZP
+  stVideoAnalytics = TStreamType($53524156); //VARS
+  stPING = TStreamType($474E4950); //PING
+  stNotification = TStreamType ($4346544E); //NTFC
+//  stAcceptanceFilter = TStreamType($52464341); //ACFR
+
 
 	type
 	  //Команды удаленного взаимодействия
@@ -27,3 +61,151 @@ unit MediaServer.Net.Ms3s.Definitions;
 	    icCreateStreamWithLogin,
 	    icNop
 	  );
+
+unit MediaStream.DataSource.Ms3s;
+	unit MediaServer.Net.Ms3s.CommandClient
+	unit MediaServer.Net.Ms3s.Login;
+
+
+	procedure TMediaStreamDataSource_Ms3s.DoConnect(...
+
+		procedure TMediaServerStream.OpenWithLogin(...  // unit MediaServer.Net.Ms3s.Stream;
+
+			SendCommand(icCreateStreamWithLogin, aParams, aResult);	
+
+
+  icPingMarker         : TGUID = '{9F850E94-DDBC-4B66-BEE7-3D091FA08D8D}';
+  icGoodBuyMarker      : TGUID = '{768F67FE-F9CB-4A71-BA00-A7F97B6856DB}';
+  icCommandBeginMarker : TGUID = '{7B6102DD-A779-4D65-9CA8-39D32C7C7214}';
+  icCommandEndMarker   : TGUID = '{B530A481-A2AA-4FC0-ADD9-8395E33CD187}';
+  icCommandEndMarkerWithMaskedData   : TGUID = '{24D6B2BA-2C66-4C8E-8A18-F1E64CB4FADE}';
+
+class procedure TRemoteClient_B.SendCommand(aIOHandler: TIdIOHandler;
+  aCommand: cardinal; aData: TBytes);
+begin
+  //1. Маркер начала команды icCommandBeginMarker : TGUID = '{7B6102DD-A779-4D65-9CA8-39D32C7C7214}';
+  aIOHandler.WriteGUID(icCommandBeginMarker);
+  //2. Код команды
+  aIOHandler.Write(aCommand);
+  //4. Размер данных для команды+Сами данные
+  aIOHandler.WriteWithSizeHeader(aData);
+  //5. Маркер конца команды icCommandEndMarker   : TGUID = '{B530A481-A2AA-4FC0-ADD9-8395E33CD187}';
+  aIOHandler.WriteGUID(icCommandEndMarker);
+  //FClient.GetResponse(icResponseCodeOK);
+end;
+
+	procedure TrdcsCreateStreamWithLoginParams.SaveToStream(aStream: TStream);
+	begin
+	  inherited; // aStream.WriteString(FClientName)
+	  aStream.WriteString(FSourceName);
+	  aStream.WriteString(FUserName);
+	  aStream.WriteString(FPassword);
+	  aStream.WriteCardinal(FBandWidth);
+
+	  aStream.WriteInteger(Length(FMediaProcessors));
+	  if Length(FMediaProcessors)>0 then
+	    aStream.WriteBuffer(FMediaProcessors[0],Length(FMediaProcessors));
+
+	  aStream.WriteInteger(PInteger(@FMediaTypes)^);
+	  aStream.WriteString(FParams);
+	end;
+
+                         dd 02 61 7b 79 a7 65 4d 9c a8        ..a{y.eM..
+0040   39 d3 2c 7c 72 14 00 00 00 0b 00 00 00 4e 0b 00   9.,|r........N..
+0050   00 00 56 00 53 00 63 00 72 00 65 00 65 00 6e 00   ..V.S.c.r.e.e.n.
+0060   2e 00 65 00 78 00 65 00 07 00 00 00 4f 00 75 00   ..e.x.e.....O.u.
+0070   74 00 5f 00 31 00 30 00 32 00 04 00 00 00 72 00   t._.1.0.2.....r.
+0080   6f 00 6f 00 74 00 01 00 00 00 31 00 00 00 04 00   o.o.t.....1.....
+0090   00 00 00 00 07 00 00 00 00 00 00 00 81 a4 30 b5   ..............0.
+00a0   aa a2 c0 4f ad d9 83 95 e3 3c d1 87               ...O.....<..
+	
+
+Результат команды: 1   - норм
+				   255 - ошибка	
+
+Потом результат логина
+
+
+class procedure TRemoteClientWithAck_B.ReadCommandResponse(aIoHandler: TIdIOHandler; var aResult: TBytes);
+var
+  aResultCode: byte;
+  aExceptionMessage: string;
+  aExceptionCode : integer;
+  aExceptionClassName: string;
+  aSize: cardinal;
+begin
+  aResultCode:=aIOHandler.ReadByte;
+
+  case aResultCode of
+    255: begin
+      aExceptionCode:=aIOHandler.ReadLongInt;
+      aExceptionClassName:=aIOHandler.ReadStringWithSizeHeader;
+      aExceptionMessage:=aIOHandler.ReadStringWithSizeHeader;
+      raise ERemoteClientCommandError.Create(aExceptionMessage,aExceptionClassName,aExceptionCode);
+    end;
+    1: begin
+      aSize:=aIOHandler.ReadLongWord;
+      try
+        aIOHandler.ReadBytes(aResult,aSize,false);
+      except
+        on E:EStreamError do
+          raise Exception.Create('Неверный формат переданных данных');
+      end;
+    end;
+  end;
+end;
+
+
+procedure TrdcsCreateStreamResult.LoadFromStream(aStream: TStream);
+var
+  aSize: integer;
+  aLength: integer;
+  i: integer;
+begin
+  inherited;
+  aStream.ReadString(FStreamSourceHost);
+  aStream.ReadInteger(aSize); FStreamPort:=aSize;
+  aStream.ReadInteger(aSize); FSyncPort:=aSize;
+
+  aStream.ReadHandle(FStreamHandle);
+  aStream.ReadInteger(aSize);
+  FVideoStreamType:=TStreamType(aSize);
+  aStream.ReadString(FVideoStreamSubType);
+
+  aStream.ReadInteger(aSize);
+  FAudioStreamType:=TStreamType(aSize);
+  aStream.ReadString(FAudioStreamSubType);
+
+  aStream.ReadInteger(aSize);
+  SetLength(FStreamInfo,aSize);
+  if aSize>0 then
+    aStream.ReadBuffer(FStreamInfo[0],aSize);
+
+  aStream.ReadInteger(FStreamLength);
+  aStream.ReadBoolean(FSourceSupportsPtz);
+
+  aStream.ReadInteger(aLength);
+  SetLength(FArchiveSources,aLength);
+  for i := 0 to High(FArchiveSources) do
+  begin
+    aStream.ReadString(FArchiveSources[i].Id);
+    aStream.ReadString(FArchiveSources[i].Description);
+  end;
+end;
+
+procedure TrdcsCreateStreamWithLoginResult.LoadFromStream(aStream: TStream);
+begin
+  inherited; // TrdcsCreateStreamResult.LoadFromStream(aStream: TStream);
+  aStream.ReadHandle(FLoginHandle);
+  aStream.ReadBuffer(FServerID,sizeof(FServerID));
+end;
+
+
+QDateTime Converter::fromTDateTime( double tDateTime )
+{
+	int time_t = (int)((tDateTime — 25569.16666) * 86400); //получили время в формате time_t
+	return QDateTime::fromTime_t( time_t );
+}
+
+25569.16666 — это 1 января 1970 года в формате TDateTime.
+86400 — количество секунд в одном дне.	
