@@ -201,6 +201,14 @@ begin
 end;
 
 
+
+----------------------------------------------------------
+
+********************* Stream Client **********************
+----------------------------------------------------------
+
+
+
 QDateTime Converter::fromTDateTime( double tDateTime )
 {
 	int time_t = (int)((tDateTime — 25569.16666) * 86400); //получили время в формате time_t
@@ -208,4 +216,58 @@ QDateTime Converter::fromTDateTime( double tDateTime )
 }
 
 25569.16666 — это 1 января 1970 года в формате TDateTime.
-86400 — количество секунд в одном дне.	
+86400 — количество секунд в одном дне.
+
+
+  TStreamDataPacketHeader = packed record
+    //Seq No
+    SeqNo: cardinal;
+
+    //Current Date & Time
+    DateTime: TDateTime;
+
+    //Format
+    Format: TMediaStreamDataHeader;
+
+    //Пропущенные перед этим кадром кадры
+    SkippedFrameCount: cardinal;
+    SkippedFrameSize: cardinal;
+
+    ReservedSize: Word;
+    DataSize: cardinal;
+    InfoSize: cardinal;
+  end;
+
+
+  TFrameFlag = (ffKeyFrame, ffInitParamsFrame, ffPrebuffer);
+  TFrameFlags = set of TFrameFlag;
+
+
+  TMediaStreamDataHeader = packed record
+    biMediaType: TMediaType;
+    biStreamType: TStreamType;
+    biStreamSubType: DWORD;
+    biFrameFlags: TFrameFlags;
+
+    Channel: integer;
+    TimeStamp: int64; // ms
+    TimeKoeff: word;  // TimeStamp * TimeKoeff = ms
+
+    Tag : integer;
+
+    case TMediaType of
+     mtVideo: (
+       VideoWidth: integer;
+       VideoHeight: integer;
+        //biPlanes: Word;
+       VideoBitCount: Word;
+       VideoReversedVertical: boolean;
+       );
+     mtAudio: (
+       AudioChannels: DWORD;
+       AudioBitsPerSample: DWORD;
+       AudioSamplesPerSec: DWORD;
+     );
+  end;	
+
+  размер структуры данных пакета: 70 байт
