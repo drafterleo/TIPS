@@ -271,3 +271,46 @@ QDateTime Converter::fromTDateTime( double tDateTime )
   end;	
 
   размер структуры данных пакета: 70 байт
+
+  unit MediaServer.Net.Ms3s.StreamClient;
+
+		procedure TMs3sStreamClient.ReadFromIO(aIO: TIdIOHandler;
+		  out aDataPacket: TStreamDataPacketHeader;var aData, aInfo: TBytes);
+		var
+		  aMarker: cardinal;
+
+		  aBytes: TBytes;
+		  x64: int64;
+		  aDT: TDateTime;
+		label
+		  Start;
+		begin
+		Start:
+		  aMarker:=aIO.ReadLongWord;
+
+		  if aMarker=FrameSynchronization then
+		  begin
+		    //Отправляем свое время
+		    aDT:=Now;
+		    x64:=PInt64(@aDT)^;
+		    aIO.Write(x64);
+		    goto Start;
+		  end
+
+		  else if aMarker=FrameDataMarker then
+		  begin
+		    SetLength(aBytes,sizeof(aDataPacket));
+		    aIO.ReadBytes(aBytes,sizeof(aDataPacket),false);
+		    CopyMemory(@aDataPacket,aBytes,sizeof(aDataPacket));
+
+		    aIO.ReadBytes(aBytes,aDataPacket.ReservedSize,false);
+		    SetLength(aData,aDataPacket.DataSize);
+		    SetLength(aInfo,aDataPacket.InfoSize);
+
+		    aIO.ReadBytes(aData,aDataPacket.DataSize,false);
+		    aIO.ReadBytes(aInfo,aDataPacket.InfoSize,false);
+		  end
+		  else begin
+		    raise ENetStreamClientError.Create('Ошибка чтения медиа-потока с сервера: неизвестный тип пакета');
+		  end;
+		end;
