@@ -6,6 +6,8 @@ Git global setup
 	git config --global user.name "drafterleo"
 	git config --global user.email "drafterleo@gmail.com"
 
+git config --global core.editor "nano"
+
 Aliases
 	git config --global alias.co checkout
 	git config --global alias.ci commit
