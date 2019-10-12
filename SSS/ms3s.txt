@@ -1,6 +1,7 @@
 Порты
 	18344 - командный
 	18345 - потоковый
+    18346 - синхронизация
 
 	ms3s://172.16.33.133:18344/Out_102   root 1
 
@@ -221,21 +222,21 @@ QDateTime Converter::fromTDateTime( double tDateTime )
 
   TStreamDataPacketHeader = packed record
     //Seq No
-    SeqNo: cardinal;
+    SeqNo: cardinal;           // 4
 
     //Current Date & Time
-    DateTime: TDateTime;
+    DateTime: TDateTime;       // 8
 
     //Format
-    Format: TMediaStreamDataHeader;
+    Format: TMediaStreamDataHeader; // 40
 
     //Пропущенные перед этим кадром кадры
-    SkippedFrameCount: cardinal;
-    SkippedFrameSize: cardinal;
+    SkippedFrameCount: cardinal; // 4
+    SkippedFrameSize: cardinal;  // 4
 
-    ReservedSize: Word;
-    DataSize: cardinal;
-    InfoSize: cardinal;
+    ReservedSize: Word;          // 2
+    DataSize: cardinal;          // 4
+    InfoSize: cardinal;          // 4
   end;
 
 
@@ -244,29 +245,29 @@ QDateTime Converter::fromTDateTime( double tDateTime )
 
 
   TMediaStreamDataHeader = packed record
-    biMediaType: TMediaType;
-    biStreamType: TStreamType;
-    biStreamSubType: DWORD;
-    biFrameFlags: TFrameFlags;
+    biMediaType: TMediaType;       // 1
+    biStreamType: TStreamType;     // 4
+    biStreamSubType: DWORD;        // 4
+    biFrameFlags: TFrameFlags;     // 1
 
-    Channel: integer;
-    TimeStamp: int64; // ms
-    TimeKoeff: word;  // TimeStamp * TimeKoeff = ms
+    Channel: integer; // 4 
+    TimeStamp: int64; // 8    // ms
+    TimeKoeff: word;  // 2    // TimeStamp * TimeKoeff = ms
 
-    Tag : integer;
+    Tag : integer;  // 4 
 
     case TMediaType of
      mtVideo: (
-       VideoWidth: integer;
-       VideoHeight: integer;
+       VideoWidth: integer;    // 4
+       VideoHeight: integer;   // 4
         //biPlanes: Word;
-       VideoBitCount: Word;
-       VideoReversedVertical: boolean;
+       VideoBitCount: Word;    // 2
+       VideoReversedVertical: boolean; // 1
        );
      mtAudio: (
-       AudioChannels: DWORD;
-       AudioBitsPerSample: DWORD;
-       AudioSamplesPerSec: DWORD;
+       AudioChannels: DWORD;      // 4
+       AudioBitsPerSample: DWORD; // 4 
+       AudioSamplesPerSec: DWORD; // 4
      );
   end;	
 
@@ -314,3 +315,66 @@ QDateTime Converter::fromTDateTime( double tDateTime )
 		    raise ENetStreamClientError.Create('Ошибка чтения медиа-потока с сервера: неизвестный тип пакета');
 		  end;
 		end;
+
+
+
+
+----------------------------------------------------------
+
+********************* Sync Client **********************
+----------------------------------------------------------
+
+  TSyncPacket = packed record
+    ServerClientTimeDifferenceMs: int64;
+    LastFrameSeqNo: cardinal;
+    QueueSize: cardinal;
+  end;
+
+  TSyncPacketAnswer = packed record
+    ClientLocalTime: TDateTime;
+
+    LastFrameSeqNo: cardinal;
+    LastFrameDateTime: TDateTime;
+  end;
+
+
+
+procedure TMs3sSyncClient.ReadFromIO(aIO: TIdIOHandler; out aDataPacket: TSyncPacket);
+var
+  aMarker: cardinal;
+
+  aBytes: TBytes;
+  aAnswer: TSyncPacketAnswer;
+begin
+  aMarker:=aIO.ReadLongWord;
+
+  if aMarker=FrameSynchronization then
+  begin
+    SetLength(aBytes,sizeof(aDataPacket));
+    aIO.ReadBytes(aBytes,sizeof(aDataPacket),false);
+    CopyMemory(@aDataPacket,aBytes,sizeof(aDataPacket));
+    //TraceLine('RECEIVED SYNC '+IntToStr(aDataPacket.LastFrameSeqNo));
+
+    aAnswer.LastFrameSeqNo:=FLastReceivedFrameSeqNo;
+    aAnswer.LastFrameDateTime:=FLastReceivedFrameDateTime;
+    aAnswer.ClientLocalTime:=Now;
+    aBytes:=RawToBytes(aAnswer,sizeof(aAnswer));
+    aIO.Write(aBytes);
+
+    //TraceLine('SENDED SYNC '+IntToStr(aAnswer.LastFrameSeqNo));
+  end
+
+  else begin
+    raise ENetStreamClientError.Create('Ошибка чтения медиа-потока с сервера: неизвестный тип пакета');
+  end;
+end;
+
+
+0020   50 18 00 e5 64 aa 00 00 b7 9b 6a 51 36 56 e5 40
+0030   00 00 00 00 00 00 00 00 00 00 00 00
+
+
+40e55636516a9bb7
+
+
+
