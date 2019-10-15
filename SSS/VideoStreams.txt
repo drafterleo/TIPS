@@ -22,6 +22,10 @@ gst-launch-1.0 -v rtspsrc latency=100 location=rtsp://127.0.0.1:8554/test ! deco
 
 gst-launch-1.0 rtspsrc location=rtspt://admin:12345@172.16.35.61:554/Streaming/Channels/102 latency=200 tcp-timeout=3000000 ! rtph264depay ! h264parse ! avdec_h264 ! x265enc ! rtph265pay name=pay0 pt=96 
 
+gst-launch-1.0 -v filesrc location=/home/video/ldr01.h264 ! h264parse ! avdec_h264 ! videoconvert ! autovideosink
+
+ffmpeg -i test.mp4 -an -vcodec libx264 -crf 23 test.h264
+ffmpeg -i ldr01.h264 -vf scale=640:480,setdar=4:3 ldr01sd.h264
 
 rtsp://172.16.34.94:8554/Out_1hd
 rtsp://172.16.34.94:8554/Out_1sd
@@ -32,6 +36,8 @@ rtsp://172.16.34.94:8554/test
 rtsp://172.16.34.94:8554/snow
 rtsp://172.16.34.94:8554/ball
 rtsp://172.16.34.94:8554/h265
+rtsp://172.16.34.94:8554/ldr02
 
 rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/101
 rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/102
+Out

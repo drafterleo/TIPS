@@ -112,5 +112,7 @@ else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 
+PS1=$PS1'\[\e]2;\W\a\]' # set terminal title to cwd
+
 
 	
