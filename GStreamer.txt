@@ -12,3 +12,6 @@ gst-launch-1.0 v4l2src device="/dev/video0" ! video/x-raw,width=640,height=480 !
 Feed from screengrabber
 
 gst-launch-1.0 ximagesrc ! videoconvert ! autovideosink
+
+"videoconvert" is a element that reads the input video and adapts it to a format that is understood by the output. In this case it is needed since the xvimagesrc has not defined its output format.
+

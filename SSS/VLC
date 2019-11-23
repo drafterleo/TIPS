@@ -1,0 +1,28 @@
+VLC
+
+:sout=#transcode{vcodec=h264,scale=Auto,acodec=none}:rtp{sdp=rtsp://:8554/bang} :no-sout-all :sout-keep
+:sout=#transcode{vcodec=h264,scale=Auto,acodec=none}:rtp{sdp=rtsp://:8765/film.sdp} :no-sout-all :sout-keep
+rtsp://127.0.0.1:8554/bang
+
+rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/102
+:sout=#transcode{acodec=none}:rtp{sdp=rtsp://:8555/out_1s} :no-sout-all :sout-keep
+rtsp://127.0.0.1:8555/out1_s
+
+***
+
+
+
+ffplay -rtsp_flags listen rtsp://localhost:8765/film.sdp
+ffplay -timeout 5 rtsp://localhost:8765/film.sdp
+ffplay -stimeout 500000 rtsp://localhost:8765/film.sdp
+ffplay -rtsp_flags listen rtsp://192.168.65.1:8765/film.sdp
+
+ffmpeg -i /home/drafter/Videos/bang.avi -vcodec libx264 -f rtsp -rtsp_transport tcp rtsp://localhost:8765/film.sdp
+
+ffmpeg -i /home/drafter/Videos/bang.avi -vcodec libx264 -vf scale=640:360 -f rtsp -rtsp_transport tcp rtsp://localhost:8765/film.sdp
+
+ffmpeg -i /home/drafter/Videos/bang.avi -vcodec copy -vf scale=640:360 -f rtsp -rtsp_transport tcp rtsp://localhost:8765/film.sdp
+
+ffmpeg -f rtsp -rtsp_transport tcp -i rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/102 -vcodec copy -tune zerolatency -f rtsp -rtsp_transport tcp rtsp://localhost:8765/out_1s
+
+ffmpeg -re -f rtsp -rtsp_transport tcp -i rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/102 -c:v copy -c:a copy -tune zerolatency -f rtsp -rtsp_transport tcp rtsp://localhost:8765/out_1s

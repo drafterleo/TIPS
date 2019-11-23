@@ -72,7 +72,10 @@ Hard delete unpublished commits:
 
 
 Autosave passwords
+	## Windows
 	git config credential.helper store
+	##Linux
+	git config --global credential.helper cache
 
 
 SSH key generation
