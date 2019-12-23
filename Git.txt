@@ -1,6 +1,7 @@
 ﻿sudo apt-add-repository ppa:git-core/ppa
 sudo apt update
 sudo apt install git
+4bbd94270db50c57f3c731a5c8ed8e219d30c419
 
 Git global setup
 	git config --global user.name "drafterleo"
