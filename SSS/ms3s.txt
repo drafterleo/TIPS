@@ -376,5 +376,75 @@ end;
 
 40e55636516a9bb7
 
+================= PTZ ======================
 
+type
+  TPtzCommand = (ptzcLeft, 
+                 ptzcUp, 
+                 ptzcRight,
+                 ptzcDown,
+                 ptzcZoomIn,
+                 ptzcZoomOut,
+                 ptzcFocusIn,
+                 ptzcFocusOut,
+                 ptzcApertureInc,
+                 ptzcApertureDec, 
+                 ptzcLeftStop,
+                 ptzcUpStop,
+                 ptzcRightStop,
+                 ptzcDownStop,
+                 ptzcZoomInStop,
+                 ptzcZoomOutStop,
+                 ptzcFocusInStop,
+                 ptzcFocusOutStop,
+                 ptzcApertureIncStop,
+                 ptzcApertureDecStop,
+                 ptzcMoveToPoint,
+                 ptzcMoveToPosition);
+
+TrdcsPtzCommandParams = class (TrdcsCommandParams)
+  private
+    FStreamHandle: THandle;
+    FCommand: TPtzCommand;
+    FDuration,FSpeed: cardinal;
+    FPositionPan: double; //абсолютный угол по горизонтальной оси в градусах
+    FPositionTilt: double; //абсолютный угол по вертикальной оси в градусах
+    FPointId: cardinal;
+
+
+procedure TrdcsPtzCommandParams.SaveToStream(aStream: TStream);
+begin
+  inherited;
+  aStream.WriteCardinal(FStreamHandle);
+
+  aStream.WriteInteger(integer(FCommand));
+  aStream.WriteCardinal(FDuration);
+  aStream.WriteCardinal(FSpeed);
+  aStream.WriteCardinal(FPointId);
+  aStream.WriteDouble(FPositionPan);
+  aStream.WriteDouble(FPositionTilt);
+end;
+
+PtzCommand(FHandle,aCommand,aDuration,aSpeed,aPointId,aPositionPan,aPositionTilt);
+
+procedure TMs3sCommandClient.PtzCommand(aStreamHandle: THandle; aCommand: TPtzCommand;
+      aDuration,aSpeed: integer; //Для операций движения ptzcLeft,ptzcUp,ptzcRight,ptzcDown,
+      aPointId: cardinal; //Для операции ptzcMoveToPoint
+      const aPositionPan,aPositionTilt: double //Для операции ptzcMoveToPosition
+      );
+var
+  aParams: TrdcsPtzCommandParams;
+begin
+  aParams:=TrdcsPtzCommandParams.Create(aStreamHandle,aCommand,aDuration,aSpeed,aPointId,aPositionPan,aPositionTilt);
+  try
+    Lock;
+    try
+      SendCommandNoAck(icPtzCommand, aParams);
+    finally
+      Unlock;
+    end;
+  finally
+    aParams.Free;
+  end;
+end;                 
 
