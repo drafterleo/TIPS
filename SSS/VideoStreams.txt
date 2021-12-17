@@ -38,11 +38,8 @@ rtsp://172.16.34.94:8554/ball
 rtsp://172.16.34.94:8554/h265
 rtsp://172.16.34.94:8554/ldr02
 
-rtsp://172.16.35.37:8554/ldr01
 
-rtsp://192.168.0.103:8554/ldr02
-
-rtsp://192.168.0.99:8554/ldr02
 
 rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/101
 rtsp://admin:12345@172.16.35.61:554/Streaming/Channels/102
+Out

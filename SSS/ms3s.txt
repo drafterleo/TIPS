@@ -252,7 +252,7 @@ QDateTime Converter::fromTDateTime( double tDateTime )
 
     Channel: integer; // 4 
     TimeStamp: int64; // 8    // ms
-    TimeKoeff: word;  // 2    // TimeStamp * TimeKoeff = ms
+    TimeKoeff: word;  // 2    width
 
     Tag : integer;  // 4 
 
