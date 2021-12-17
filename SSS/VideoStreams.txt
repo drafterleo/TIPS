@@ -24,6 +24,8 @@ gst-launch-1.0 rtspsrc location=rtspt://admin:12345@172.16.35.61:554/Streaming/C
 
 gst-launch-1.0 -v filesrc location=/home/video/ldr01.h264 ! h264parse ! avdec_h264 ! videoconvert ! autovideosink
 
+gst-launch-1.0 -v rtspsrc location=rtspt://admin:12345@172.16.35.61:554/Streaming/Channels/102 latency=200 tcp-timeout=3000000 name=rtsp_src rtsp_src. ! queue ! rtph264depay ! rtph264pay name=pay0 pt=96 rtsp_src. ! queue ! rtppcmudepay ! rtppcmupay name=pay1
+
 ffmpeg -i test.mp4 -an -vcodec libx264 -crf 23 test.h264
 ffmpeg -i ldr01.h264 -vf scale=640:480,setdar=4:3 ldr01sd.h264
 

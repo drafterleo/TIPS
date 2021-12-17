@@ -1,0 +1,113 @@
+
+----------------------------------------------------------
+
+*********************  Serv Command  *********************
+----------------------------------------------------------
+
+  icPingMarker         : TGUID = '{9F850E94-DDBC-4B66-BEE7-3D091FA08D8D}';
+  icGoodBuyMarker      : TGUID = '{768F67FE-F9CB-4A71-BA00-A7F97B6856DB}';
+  icCommandBeginMarker : TGUID = '{7B6102DD-A779-4D65-9CA8-39D32C7C7214}';
+  icCommandEndMarker   : TGUID = '{B530A481-A2AA-4FC0-ADD9-8395E33CD187}';
+  icCommandEndMarkerWithMaskedData   : TGUID = '{24D6B2BA-2C66-4C8E-8A18-F1E64CB4FADE}';
+  icResponseCodeOK = '200';
+
+  //Получение версии
+  icGetProtocolVersion = 255;
+
+  icCommandSuccessfullyCompleted = 1;
+  icCommandBrokenWithException = 255;
+
+  const
+   Ms3sProtocolVerion = 131010; //'2013.10.10'
+
+     MediaTypeNames: array [TMediaType] of string = ('Video','Audio','SysData');
+
+  stHHVI  = TStreamType($49564848); //HHVI;
+  stYUV420 = TStreamType($34565559); //YUV, 4+2+0;
+  stRGB = TStreamType($20424752); //RGB
+  stMJPEG = TStreamType($47504A4D); //MJPG
+  stH264 = TStreamType($34363248); //H264
+  stMpeg4 = TStreamType($34504D46); //FMP4
+
+  //AUDIO
+  stHHAU  = TStreamType($55414848); //HHAU;
+  stPCM  =TStreamType(WAVE_FORMAT_PCM); //PCM
+  stPCM_ALAW  =TStreamType(WAVE_FORMAT_ALAW); //PCMA  (G.711 a-law)
+  stPCM_MULAW  =TStreamType(WAVE_FORMAT_MULAW); //PCMU  (G.711 u-law)
+  stADPCM     = TStreamType(WAVE_FORMAT_ADPCM); //
+  stG726_ADPCM  = TStreamType(WAVE_FORMAT_G726_ADPCM);
+
+  stUNIV = TStreamType($554E4956); //UNIV. Universal container. Type of stream is unknown until first frame came
+
+
+  stCOPY = TStreamType($59504F43); //COPY
+  stBinary = TStreamType($53545354); //TSTS
+
+  //SYS
+  stPtzPosition = TStreamType($505A5450); //PTZP
+  stVideoAnalytics = TStreamType($53524156); //VARS
+  stPING = TStreamType($474E4950); //PING
+  stNotification = TStreamType ($4346544E); //NTFC
+//  stAcceptanceFilter = TStreamType($52464341); //ACFR
+
+
+
+procedure TRemoteServerWithAck_B.HandleIO(aContext: TIdContext);
+var
+  aBytes: TBytes;
+  aData : TBytes;
+  aCommand: byte;
+  aSize   : integer;
+  aIO: TIdIOHandler;
+  aHandleContext: THandleContext;
+begin
+  //У нас слишком мелкие данные. Лучше объединение пакетов выключить
+  //AContext.Connection.Socket.UseNagle := False;
+
+  aIO:=aContext.Connection.IOHandler;
+
+  //1. Маркер начала команды
+  aIO.ReadBytes(aBytes,sizeof(TGUID),false);
+  if IsEqualGUID(icPingMarker,PGUID(aBytes)^) then
+  begin
+    //IO.WriteLn(icResponseCodeOK);
+  end
+  else if IsEqualGUID(icGoodBuyMarker,PGUID(aBytes)^) then
+  begin
+    abort;
+  end
+  else if IsEqualGUID(icCommandBeginMarker,PGUID(aBytes)^) then
+  begin
+    //2. Код команды
+    aCommand:=aIO.ReadLongWord;
+    //3. Размер данных для команды
+    aSize:=aIO.ReadLongInt;
+    //4. Сами данные
+    aData:=nil;
+    aIO.ReadBytes(aData,aSize);
+    //5. Маркер конца команды
+    aBytes:=nil;
+    aIO.ReadBytes(aBytes,sizeof(TGUID),false);
+
+    if IsEqualGUID(icCommandEndMarker,PGUID(aBytes)^) then
+    begin
+    end
+    else if IsEqualGUID(icCommandEndMarkerWithMaskedData,PGUID(aBytes)^) then
+    begin
+      MaskData(aData);
+    end
+    else
+      raise Exception.Create('Неверный маркер окончания команды');
+
+    if byte(aCommand)=icGetProtocolVersion then
+      aIO.Write(GetVersion)
+    else begin
+      Assert(Length(aData)=aSize);
+      aHandleContext.BindingIp:=aContext.Binding.IP;
+      aHandleContext.IO:=aIO;
+      ManageCommand(aHandleContext, aCommand,aData);
+    end;
+  end
+  else
+    raise Exception.Create('Неизвестная команда');
+end;
